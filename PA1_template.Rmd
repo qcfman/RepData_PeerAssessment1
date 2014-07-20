@@ -1,20 +1,95 @@
-# Reproducible Research: Peer Assessment 1
+Reproducible Research -- Assigment #1
+========================================================
+Juan Carlos Guzman
+20/Jul/2014
+
+This report shows the solution of homework #1.
 
 
-## Loading and preprocessing the data
+## Loading and Preprocessing the Data
+
+We just load the data using read.csv.  Please change the working directory to the location where the data is.
+```{r}
+setwd("C:/Users/Juan Carlos/Desktop/Reproducible Data/repdata-data-activity")
+ds <- read.csv("activity.csv")
+summary(ds)
+```
+
+## Calculation of Total Number of Steps per Day
+```{r}
+require(plyr)
+ds1 <- ds[complete.cases(ds),]
+summary(ds1)
+dd2 <- ddply(ds1,~date,summarise,steps=sum(steps))
+```
+
+```{r fig.width=7, fig.height=6}
+hist(dd2$steps,main = "Average Number of Steps per Day", xlab = "Steps", col="red")
+```
+
+The mean and median of steps per day are:
+
+```{r}
+mean(dd2$steps)
+median(dd2$steps)
+```
+
+## Calculation of the Average Daily Activity Pattern
+```{r}
+require(plyr)
+dd3 <- ddply(ds1,~interval,summarise,steps=mean(steps))
+```
+
+```{r fig.width=7, fig.height=6}
+with(dd3, plot(interval, steps, type = "l",ylab = "Steps", xlab = ""))
+```
+
+The following calculation finds the interval with maximum average number of steps.  It specifies the 5-minute interval and the number of steps (i.e., the maximum for any given interval):
+```{r}
+dd3[which.max(dd3$steps),]
+```
+
+##Imputing missing values
+
+The following is the number of rows with "missing values", i.e., the number of rows with "incomplete cases".
+```{r}
+(dim(ds)-dim(ds1))[1]
+```
+
+I filled NA's with zeroes in the data frame (it might be too simple but I was having problems trying to use a more sophisticated value out of the data).  This choice allowed me to continue doing the homework.
+
+```{r}
+dd4 <- ds1
+dd4$steps <- ifelse(is.na(dd4$steps), 0, dd4$steps)
+dd5 <- ddply(dd4,~date,summarise,steps=sum(steps))
+
+```
+
+Following is the mean and median of steps per day of the new data set.  The numbers coincide with the one previously calculated.  I could come back and revise this choice.
+
+```{r}
+mean(dd5$steps)
+median(dd5$steps)
+```
+
+## Calculation of the new graph
+the new graph is identical to the previous one.
+```{r}
+require(plyr)
+dd6 <- ddply(dd4,~interval,summarise,steps=mean(steps))
+```
+
+```{r fig.width=7, fig.height=6}
+with(dd6, plot(interval, steps, type = "l",ylab = "Steps", xlab = ""))
+```
+
+dd4$datetype now contains two factors: weekday and weekend, depending on the type of day in date.
+
+```{r}
+dd4$datetype <- ifelse(weekdays(as.Date(dd4$date))%in% c('Saturday','Sunday'),"weekend","weekday")
+```
+
+The next steps are to generate the graph for each factor.  I will not present it here.
 
 
 
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
