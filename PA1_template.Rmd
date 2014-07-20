@@ -1,7 +1,5 @@
 Reproducible Research -- Assigment #1
 ========================================================
-Juan Carlos Guzman
-20/Jul/2014
 
 This report shows the solution of homework #1.
 
@@ -89,7 +87,17 @@ dd4$datetype now contains two factors: weekday and weekend, depending on the typ
 dd4$datetype <- ifelse(weekdays(as.Date(dd4$date))%in% c('Saturday','Sunday'),"weekend","weekday")
 ```
 
-The next steps are to generate the graph for each factor.  I will not present it here.
+The next steps are to generate the graph for each factor.
+
+```{r}
+dd6 <- ddply(dd4,~interval+datetype,summarise,steps=mean(steps))
+```
+
+
+```{r fig.width=7, fig.height=6}
+with(dd6, plot(steps ~ interval, subset = datetype == "weekday", type = "l",ylab = "steps", xlab = ""))
+with(dd6, plot(steps ~ interval, subset = datetype == "weekend", type = "l",ylab = "steps", xlab = ""))
+```
 
 
 
